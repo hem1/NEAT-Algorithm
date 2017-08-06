@@ -1,0 +1,53 @@
+CC	= g++
+CFLAGS	= -std=c++11
+LDFLAGS	=
+OBJDIR	= obj
+SRCADIR	= ..
+SRCBDIR	= .
+
+SRCA =	../Synapse.cpp \
+	../Neuron.cpp \
+	../Genotype.cpp \
+	../ANN.cpp \
+	../Population.cpp \
+	../GeneticAlgorithm.cpp
+
+SRCB =	board.cpp \
+	main.cpp
+
+#substitute path
+OBJA=$(patsubst $(SRCADIR)/%,$(OBJDIR)/% ,$(SRCA:.cpp=.o))
+
+#add prefix to path
+OBJB=$(addprefix $(OBJDIR)/, $(SRCB:.cpp=.o))
+
+
+MAIN=game
+
+all:		$(MAIN)
+		@echo “Build Finished”
+
+#Link
+$(MAIN):	$(OBJA) $(OBJB)
+		$(CC) -o $(MAIN) $(OBJA) $(OBJB)
+		
+#Compile
+
+$(OBJDIR)/%.o:$(SRCADIR)/%.cpp
+		@mkdir -p $(dir $@)
+		$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/%.o:$(SRCBDIR)/%.cpp
+		@mkdir -p $(dir $@)
+		$(CC) $(CFLAGS) -c $< -o $@
+
+#Clean
+clean:
+		$(RM) $(OBJDIR)/*.o $(MAIN) ../*.o *.o
+
+#Dependencies
+depend:		$(SRCA) $(SRCB)
+		makedepend $^
+
+#Remake
+remake:		clean all

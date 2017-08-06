@@ -1,0 +1,35 @@
+CC=g++
+CFLAGS=-std=c++11
+LDFLAGS=
+BUILDDIR=obj
+
+
+SRCS=../Synapse.cpp ../Neuron.cpp ../Genotype.cpp ../ANN.cpp ../Population.cpp ../GeneticAlgorithm.cpp board.cpp main.cpp
+#OBJS=$(patsubst ../%,$(BUILDDIR)/% ,$(SRCS:.cpp=.o))
+OBJS=$(SRCS:.cpp=.o)
+
+MAIN=game
+
+all:		$(MAIN)
+		@echo “Build Finished”
+
+#Link
+$(MAIN):	$(OBJS)
+		$(CC) -o $(MAIN) $(OBJS)
+		#move obj files to /obj
+		mkdir -p obj
+		mv $(OBJS) $(BUILDDIR)/
+		
+#Compile
+.cpp.o:		
+		$(CC) $(CFLAGS) -c $< -o $@
+
+#Clean
+clean:
+		$(RM) $(BUILDDIR)/*.o $(MAIN)
+#Dependencies
+depend:		$(SRCS)
+		makedepend $^
+
+#Remake
+remake:		clean all

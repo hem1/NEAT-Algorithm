@@ -17,7 +17,7 @@
 
 #include "Genotype.hpp"
 #include "GeneticAlgorithm.hpp"
-#include "SnakeGAME/constants.h"
+#include "Snake GAME/constants.h"
 
 //input layer should be 13
 //#define INPUT_LAYER_SIZE            13

@@ -32,10 +32,11 @@
 const char pieces[]={' ' , 'o','x'};
 
 //used in main
-#define pop_size                300
+#define pop_size                100
 #define iteration               100
-#define n_movesf                300
+#define n_movesf                1000
 #define n_movest                5000
+#define read_file               1
 
 //used in Genotype
 #define INPUT                   0
@@ -53,8 +54,8 @@ const char pieces[]={' ' , 'o','x'};
 
 //used in Species
 #define threshold               3
-#define c1                      2.0
-#define c2                      2.0
+#define c1                      1.0
+#define c2                      1.0
 #define c3                      4.0
 
 #endif /* constants_h */

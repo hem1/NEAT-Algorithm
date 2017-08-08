@@ -204,7 +204,7 @@ void Species:: mutation(Population p){
             }
             else
             {
-                if(coinToss(0.05))
+                if(coinToss(0.1))
                 {
                     //add node
                     g = getMutateAddNode(p, g);

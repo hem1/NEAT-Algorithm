@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "Population.hpp"
-#include "SnakeGAME/constants.h"
+#include "Snake GAME/constants.h"
 
 using namespace std;
 

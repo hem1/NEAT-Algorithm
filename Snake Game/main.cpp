@@ -101,23 +101,14 @@ void startGame(Genotype pop, int  i, bool prn_board){
     {
         nw.setInputForANN(b.getInputForANN());
         nw.forwardPropagation();
-        
-        //        if(!prn_board){
-        //        nw.setTargetForANN(b.getTargetMove());
-        //        nw.backPropagation();
-        //        nw.backPropagation();
-        //        nw.backPropagation();
-        //        nw.backPropagation();
-        //
-        //
-        //        nw.forwardPropagation();
-        //        }
-        
+       
         b.setDirection(b.getMoveForSnake(nw.getOutputFromANN()));
         
         b.moveSnake();
         b.updateBoard();
         
+        nw.setTargetForANN(b.getTargetMove());
+        nw.backPropagation();
         
         //        if(b.getScore() >1000)
         //            cout<<" bazingaaa!!";
@@ -127,7 +118,7 @@ void startGame(Genotype pop, int  i, bool prn_board){
             cout<<i<<endl;
             cout<<"Score :------------ "<<b.getFitness()<<endl;
             
-            system("sleep 0.01");
+            system("sleep 0.05");
         }
     }
     //    cout<<"Game Over "<<b.gameOver()<<endl;
@@ -140,8 +131,11 @@ int main(int argc, const char * argv[]) {
     cout<<"Processing...\n";
     
     /////////////////////////////////////////////////////////////////
-    //    readSolFromFile();
-    //    exit(0);
+    if(read_file)
+    {
+        readSolFromFile();
+        exit(0);
+    }
     
     Population p;
     p.generatePopulation(pop_size);
@@ -162,7 +156,7 @@ int main(int argc, const char * argv[]) {
         //        p.printPopulation();
         for(int i = 0; i< pop_size; i++)
         {
-            //            startGame( pop[i],i, true);
+//            startGame( pop[i],i, true);
             startGame( pop[i],i, false);
         }
         
@@ -217,7 +211,7 @@ int main(int argc, const char * argv[]) {
     //    sol.printGene();
     s.printSpecies();
     
-    sol.printGene();
+//    sol.printGene();
     return 0;
 }
 

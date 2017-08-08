@@ -12,22 +12,32 @@ Board::Board(){
     int x = getRandomNumber(0, ROW-4);
     int y = getRandomNumber(0, COL-4);
     
-    snake = { {x,y},{x,y+1},{x,y+2} };
-    //    snake = { {3,40},{3,41} };
+//    snake = { {x,y},{x,y+1},{x,y+2} };
+    struct position tmp = {x,y};
+    snake.push_back(tmp);
+    tmp.y++;
+    snake.push_back(tmp);
+    tmp.y++;
+    snake.push_back(tmp);
     
+    
+    no_of_steps_without_eating = 0;
     direction = KEY_LEFT;
     //    direction = getRandomNumber(KEY_UP, KEY_LEFT);
     //    while(direction == 67)
     //    {direction=getRandomNumber(KEY_UP, KEY_LEFT);}
     game_over = false;
-    fitness = 0;
+    fitness = 0.0;
     
-    score = 0;
-    energy = 0;
-    dist_travelled = 0;
-    dist_fm_food = 0;
+    food_dist_penalty = 0.0;
+    food_consumed = 0.0;
+    dist_travelled = 0.0;
+    dist_fm_food = 0.0;
     
     generateFood();
+    
+    prev_dist_fm_food += (sqrt(pow((snake[0].x - food_pos.x), 2) + pow((snake[0].y - food_pos.y), 2)));
+
     
     for(int i = 0; i<ROW; i++)
     {
@@ -38,9 +48,9 @@ Board::Board(){
     }
 }
 double Board::getFitness(){
-//    return dist_travelled - (1.5 * energy);
-    return  score + (0.1 * dist_travelled) - (0.1 * energy);
-//    return score;
+//    return  (1000 * food_consumed) + (0.1 * dist_travelled)- (10 * food_dist_penalty);
+    return  (1000 * food_consumed) + (0.5 * dist_travelled)- (100 * food_dist_penalty);
+//    return food_consumed;
     
 }
 int Board:: getRandomNumber(int min, int max){
@@ -75,6 +85,8 @@ void Board::printBoard(){
         cout<<TOP_EDGE;
     }
     cout<<endl;
+    
+    cout<< "score : "<<food_consumed<<" steps : "<< dist_travelled<<endl;
 }
 void Board:: clearBoard(){
     for(int i = 0; i < ROW; i++)
@@ -89,9 +101,9 @@ void Board::updateBoard(){
     clearBoard();
     for(int i = 0 ; i< snake.size(); i++)
     {
-        gameboard[snake[i][0]][snake[i][1]] = SNAKE;
+        gameboard[snake[i].x][snake[i].y] = SNAKE;
     }
-    gameboard[food_pos[0]][food_pos[1]] = FOOD;
+    gameboard[food_pos.x][food_pos.y] = FOOD;
     //    printBoard();
 }
 int Board::oppositeDir(int a, int b){
@@ -139,9 +151,9 @@ void Board::setDirection(int d){
     }
     //if straight do nothing
 }
-int Board::isGameOver(vector<int> v){
+int Board::isGameOver(struct position v){
     //check if snake's head hits the wall
-    if((v[0] < 0) || (v[1] < 0) || (v[0] >= ROW) || (v[1] >= COL))
+    if((v.x < 0) || (v.y < 0) || (v.x >= ROW) || (v.y >= COL))
     {
         //        cout<<"hit wall "<<v[0]<<" "<<v[1]<<endl;
         game_over = true;
@@ -149,11 +161,13 @@ int Board::isGameOver(vector<int> v){
     }
     
     //check if snake hits its body
-    if(find(snake.begin(), snake.end(),v) != snake.end())
+    for(int i = 1;i < snake.size(); i++)
     {
-        //        cout<<"hit myself in the ass"<<endl;
-        game_over = true;
-        return 1;
+        if((snake[0].x == snake[i].x) && (snake[0].y ==snake[i].y))
+        {
+            game_over = 1;
+            return 1;
+        }
     }
     
     
@@ -164,53 +178,76 @@ int Board::getDirection(){
 }
 double Board::hitWall(int dir){
     //check if the snake hits wall in next n moves
-    //return how far the wall is
     double dist = 0.0;
+//    switch(dir)
+//    {
+//        case (KEY_LEFT):
+//            
+//            dist = double (snake[0].y/COL);
+//            break;
+//            
+//        case (KEY_RIGHT):
+//            dist = double(COL - snake[0].y) / COL;
+//            break;
+//            
+//        case (KEY_UP):
+//            dist = double(snake[0].x) / ROW;
+//            break;
+//            
+//        case (KEY_DOWN):
+//            dist = double(ROW - snake[0].x)/ ROW;
+//            break;
+//    }
+    int n = 5;
+    
     switch(dir)
     {
         case (KEY_LEFT):
-            dist = double (snake[0][1]/COL);
+            
+            if((snake[0].y -n )< 0 )
+                dist = 1;
             break;
             
         case (KEY_RIGHT):
-            dist = double(COL - snake[0][1]) / COL;
-            break;
+            if((snake[0].y +n ) > COL-1 )
+                dist = 1;            break;
             
         case (KEY_UP):
-            dist = double(snake[0][0]) / ROW;
+            if((snake[0].x -n )< 0 )
+                dist = 1;
             break;
             
         case (KEY_DOWN):
-            dist = double(ROW - snake[0][0])/ ROW;
+            if((snake[0].x +n )> COL-1 )
+                dist = 1;
             break;
     }
-    
     return dist;
     
 }
 void Board::moveSnake(){
-    vector<int> v;
+    struct position v;
     
     switch(direction)
     {
         case (KEY_LEFT):
-            v.push_back(snake[0][0]);
-            v.push_back(snake[0][1] - 1);
+            v.x = snake[0].x;
+            v.y = (snake[0].y - 1);
             break;
             
         case (KEY_RIGHT):
-            v.push_back(snake[0][0]);
-            v.push_back(snake[0][1] + 1);
+            v.x = (snake[0].x);
+            v.y = (snake[0].y + 1);
             break;
             
         case (KEY_UP):
-            v.push_back(snake[0][0] - 1);
-            v.push_back(snake[0][1]);
+            v.x = (snake[0].x - 1);
+            v.y = (snake[0].y);
             break;
             
         case (KEY_DOWN):
-            v.push_back(snake[0][0] + 1);
-            v.push_back(snake[0][1]);
+            v.x = (snake[0].x + 1);
+            v.y = (snake[0].y);
             break;
             
         default :
@@ -219,25 +256,34 @@ void Board::moveSnake(){
     
     if(!isGameOver(v))
     {
-        if(v.size() != 0)
+        
+        snake.insert(snake.begin(), v);
+        
+        //check if food is eaten
+        if((v.x == food_pos.x) && (v.y == food_pos.y))
         {
-            
-            snake.insert(snake.begin(), v);
-            
-            //check if food is eaten
-            if((v[0] == food_pos[0]) && (v[1] == food_pos[1]))
-            {
-                score += 1000;
-                generateFood();
-            }
-            else
-            {
-                //                gameboard[snake[snake.size()-1][0]][snake[snake.size()-1][1]] = EMPTY;
-                snake.pop_back();
-            }
+            food_consumed += 1;
+            no_of_steps_without_eating = 0;
+            generateFood();
+        }
+        else
+        {
+            snake.pop_back();
+            no_of_steps_without_eating++;
+            if(no_of_steps_without_eating > 100)
+                game_over = true;
         }
         dist_travelled++;
-        dist_fm_food += (sqrt(pow((snake[0][0] - food_pos[0]), 2) + pow((snake[0][1] - food_pos[1]), 2)));
+        dist_fm_food += (sqrt(pow((snake[0].x - food_pos.x), 2) + pow((snake[0].y - food_pos.y), 2)));
+        
+        if(prev_dist_fm_food > dist_fm_food) //moving away
+        {
+            food_dist_penalty++;
+        }
+        else
+            food_dist_penalty--;
+        
+        prev_dist_fm_food = dist_fm_food;
         
     }
 }
@@ -255,31 +301,29 @@ void Board::generateFood(){
             break;
     }
     
+    food_pos.x = r;
+    food_pos.y = c;
     
-    if(food_pos.size()!= 0)
-        food_pos.clear();
-    food_pos.push_back(r);
-    food_pos.push_back(c);
     
     
     
 }
-double Board:: getAngle(vector<int> v){
-    int x = pow((snake[0][1]-v[1]) ,2);
-    int y = pow((snake[0][0]-v[0]),2 );
+double Board:: getAngle(struct position v){
+    int x = pow((snake[0].y-v.y) ,2);
+    int y = pow((snake[0].x-v.x),2 );
     return (atan2(x,y)) * (180/3.14);
 }
-vector<int> Board:: rotateRight(vector<int> v){
+struct position Board:: rotateRight(struct position v){
     //rotate vector v to right once
-    vector<int> rot = {0,0};
+    struct position rot;
     int dr, dc;
     
-    dr = v[0] - snake[0][0];
-    dc = v[1] - snake[0][1];
+    dr = v.x - snake[0].x;
+    dc = v.y - snake[0].y;
     dr = -dr;
     
-    rot[0] = snake[0][0] +dc;
-    rot[1] = snake[0][1] +dr;
+    rot.x = snake[0].x +dc;
+    rot.y = snake[0].y +dr;
     return rot;
 }
 vector<double> Board:: orVectors(vector<double> v1, vector<double>v2){
@@ -290,38 +334,38 @@ vector<double> Board:: orVectors(vector<double> v1, vector<double>v2){
     }
     return v1;
 }
-vector<double> Board:: getpercpt(vector<int> v){
+vector<double> Board:: getpercpt(struct position v){
     //return reading at 5 positions separated by 20 degrees, so total angle of view is 240 degrees
     //distance / no of cols
     vector<double> p =  {0.0,0.0,0.0,0.0,0.0};
     int n = (direction == KEY_UP) ? 0 : ( (direction-KEY_UP>2)? 1 : (direction-KEY_UP)+1);
     
-    double dist = sqrt(pow((v[0] - snake[0][0]),2) + pow((v[1]-snake[0][1]), 2));
-    dist = dist / COL;
+//    double dist = sqrt(pow((v.x - snake[0].x),2) + pow((v.y-snake[0].y), 2));
+//    dist = dist / COL;
     
     //rotate v accordingly, so that snake's direction is up.
     for(int i = 0; i< n; i++)
         v = rotateRight(v);
     
-    if(v[0] < snake[0][0]) //only if v is above snake's head else not visible
+    if(v.x < snake[0].x) //only if v is above snake's head else not visible
     {
         double angle = getAngle(v);
         
         if(angle <18)
-            p[2] = dist;
+            p[2] = 1;
         else if((angle > 18) && (angle < 54))
         {
-            if(v[1] < snake[0][1]) //left side
-                p[1] = dist;
+            if(v.y < snake[0].y) //left side
+                p[1] = 1;
             else
-                p[3] = dist;
+                p[3] = 1;
         }
         else
         {
-            if(v[1] < snake[0][1]) //left side
-                p[0] = dist;
+            if(v.y < snake[0].y) //left side
+                p[0] = 1;
             else
-                p[4] = dist;
+                p[4] = 1;
         }
         
     }
@@ -392,18 +436,13 @@ vector<double> Board::getPerception(){
 vector<double>Board:: getTargetMove(){
     vector<double> out = {0,0,0};
     
-    //determine next move before the ann
+    //determine next move before the ann depending on where the food is at
     if(perc[0] > 0  )
         out ={1,0,0};   //left
     else if(perc[4] > 0 )
-        out = {0,1,0};  //right
+        out = {0,0,1};  //right
     else
-        out = {0,0,1};  //straight
-    
-    //    for(auto i: out)
-    //        cout<<i<<"\t";
-    //    cout<<endl;
-    
+        out = {0,1,0};  //straight
     
     return out;
 }
@@ -422,20 +461,18 @@ int Board::getMoveForSnake(vector<double> v){
             //            cout<<"l \n";
             break;
         case 1:
-            ret = RIGHT;
+            ret = STRAIGHT;
             //            cout<<"r \n";
             
             break;
         case 2:
-            ret = STRAIGHT;
+            ret = RIGHT;
             //            cout<<"s \n";
             
             break;
         default:
             break;
     }
-    if(ret != STRAIGHT)
-        energy++;
     
     return ret;
 }
@@ -496,9 +533,9 @@ vector<double> Board::getInputForANN(){
         dir = KEY_RIGHT;
     p_wall[0] = hitWall(dir);
 
+    perc.insert(perc.end(), p_wall.begin(), p_wall.end());
     perc.insert(perc.end(), p_food.begin(), p_food.end());
     perc.insert(perc.end(), p_body.begin(), p_body.end());
-    perc.insert(perc.end(), p_wall.begin(), p_wall.end());
 
     return perc;
 }

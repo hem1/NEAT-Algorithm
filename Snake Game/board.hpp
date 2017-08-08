@@ -18,28 +18,38 @@
 
 using namespace std;
 
+struct position{
+    int x;
+    int y;
+};
+
 class Board
 {
+    
 private:
-    vector<vector <int> > snake;
+    vector<struct position> snake;
     volatile int direction;
     
     
     bool game_over;
-    vector<int> food_pos;
+    struct position food_pos;
+    
     vector<double> perc;
     
-    int fitness;
-    int score;
-    int energy;
-    int dist_travelled;
-    int dist_fm_food;
+    int no_of_steps_without_eating;
+    
+    double fitness;
+    double food_consumed;
+    double dist_travelled;
+    double dist_fm_food;
+    double prev_dist_fm_food;
+    double food_dist_penalty;
     
     
     int getRandomNumber(int min, int max);
-    double getAngle(vector<int> v);
-    vector<double> getpercpt(vector<int> v);
-    vector<int> rotateRight(vector<int> v);
+    double getAngle(struct position v);
+    vector<double> getpercpt(struct position v);
+    struct position rotateRight(struct position v);
     int oppositeDir(int a, int b);
     vector<double> orVectors(vector<double> v1, vector<double>v2);
     double hitWall(int dir);
@@ -55,7 +65,7 @@ public:
     void moveSnake();
     void setDirection(int d);
     int getDirection();
-    int isGameOver(vector<int> v);
+    int isGameOver(struct position v);
     void generateFood();
     double getFitness();
     int getMoveForSnake(vector<double> v);

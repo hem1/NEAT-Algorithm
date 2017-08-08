@@ -26,7 +26,7 @@
 #include <vector>
 #include <iomanip>
 #include <random>
-#include "SnakeGAME/constants.h"
+#include "Snake GAME/constants.h"
 
 
 //#define INPUT             0

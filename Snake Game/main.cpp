@@ -34,7 +34,7 @@ void startGame(Genotype pop, int  i, bool prn_board);
 
 void writeToFile(Genotype g){
     ofstream f;
-    f.open("solution.txt");
+    f.open("solution.txt", std::fstream::in | std::fstream::out | std::fstream::app);
     
     vector<GeneNode> n = g.getGeneNodes();
     vector<GeneConnection> c = g.getConnection();
@@ -130,7 +130,6 @@ int main(int argc, const char * argv[]) {
     // insert code here...
     cout<<"Processing...\n";
     
-    /////////////////////////////////////////////////////////////////
     if(read_file)
     {
         readSolFromFile();
@@ -156,7 +155,8 @@ int main(int argc, const char * argv[]) {
         //        p.printPopulation();
         for(int i = 0; i< pop_size; i++)
         {
-//            startGame( pop[i],i, true);
+
+//                startGame( pop[i],i, true);
             startGame( pop[i],i, false);
         }
         
@@ -175,6 +175,11 @@ int main(int argc, const char * argv[]) {
         }
         //        cout<<"ite "<<c<<" max fitness : "<<pop[index].getFitness()<<endl;
         
+        if(c%50 == 0)
+        {
+            startGame(pop[index], index, true);
+            writeToFile(pop[index]);
+        }
         
         if((iter - c )== 1)
             break;

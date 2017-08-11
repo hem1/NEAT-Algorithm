@@ -265,6 +265,8 @@ void Board::moveSnake(){
             food_consumed += 1;
             no_of_steps_without_eating = 0;
             generateFood();
+            //snake doesnot grow
+            snake.pop_back();
         }
         else
         {
@@ -496,9 +498,6 @@ vector<double> Board::getInputForANN(){
     for(int i = 1; i<snake.size(); i++ )
     {
         vector<double> tmp = getpercpt(snake[i]);
-        //        for(auto i: tmp)
-        //            cout<<i<<" ";
-        //        cout<<endl;
         p_body = orVectors(p_body, tmp);
     }
 

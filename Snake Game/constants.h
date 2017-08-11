@@ -34,8 +34,8 @@ const char pieces[]={' ' , 'o','x'};
 //used in main
 #define pop_size                100
 #define iteration               100
-#define n_movesf                1000
-#define n_movest                5000
+#define prn_brd_false           1000
+#define prn_brd_true            5000
 #define read_file               1
 
 //used in Genotype

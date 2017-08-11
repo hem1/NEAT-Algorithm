@@ -95,7 +95,7 @@ void startGame(Genotype pop, int  i, bool prn_board){
     nw.constructNetwork(pop);
     
     
-    int tot_move = (prn_board == false) ? n_movesf : n_movest;
+    int tot_move = (prn_board == false) ? prn_brd_false : prn_brd_true;
     
     while (!b.gameOver() && (--tot_move))
     {

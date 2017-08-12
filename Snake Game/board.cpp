@@ -198,7 +198,8 @@ double Board::hitWall(int dir){
 //            dist = double(ROW - snake[0].x)/ ROW;
 //            break;
 //    }
-    int n = 5;
+//    int n = 5;
+    int n = 1;
     
     switch(dir)
     {
@@ -266,7 +267,7 @@ void Board::moveSnake(){
             no_of_steps_without_eating = 0;
             generateFood();
             //snake doesnot grow
-            snake.pop_back();
+//            snake.pop_back();
         }
         else
         {
@@ -369,6 +370,7 @@ vector<double> Board:: getpercpt(struct position v){
             else
                 p[4] = 1;
         }
+        
         
     }
     

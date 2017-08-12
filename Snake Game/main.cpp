@@ -34,7 +34,7 @@ void startGame(Genotype pop, int  i, bool prn_board);
 
 void writeToFile(Genotype g){
     ofstream f;
-    f.open("solution.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+    f.open("solution.txt");
     
     vector<GeneNode> n = g.getGeneNodes();
     vector<GeneConnection> c = g.getConnection();
@@ -52,8 +52,7 @@ void writeToFile(Genotype g){
     f.close();
 }
 
-void readSolFromFile()
-{
+void readSolFromFile(){
     ifstream f("solution.txt");
     string n_id, n_type;
     string c_in, c_out, c_weight, c_status, c_innovation;
@@ -81,12 +80,13 @@ void readSolFromFile()
             f>>c_innovation;
             g.addConnection(g.createGeneConnection(stoi(c_in), stoi(c_out), stod(c_weight), stoi(c_status), stoi(c_innovation)));
         }
+        //    g.printGene();
+        startGame(g, 0, true);
     }
     
     f.close();
     
-    //    g.printGene();
-    startGame(g, 0, true);
+    
 }
 
 void startGame(Genotype pop, int  i, bool prn_board){
@@ -118,7 +118,7 @@ void startGame(Genotype pop, int  i, bool prn_board){
             cout<<i<<endl;
             cout<<"Score :------------ "<<b.getFitness()<<endl;
             
-            system("sleep 0.05");
+//            system("sleep 0.05");
         }
     }
     //    cout<<"Game Over "<<b.gameOver()<<endl;
@@ -175,11 +175,11 @@ int main(int argc, const char * argv[]) {
         }
         //        cout<<"ite "<<c<<" max fitness : "<<pop[index].getFitness()<<endl;
         
-        if(c%50 == 0)
-        {
-            startGame(pop[index], index, true);
-            writeToFile(pop[index]);
-        }
+//        if(c%50 == 0)
+//        {
+//            startGame(pop[index], index, true);
+//            writeToFile(pop[index]);
+//        }
         
         if((iter - c )== 1)
             break;

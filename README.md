@@ -10,3 +10,5 @@ The 13 inputs are wall[3],food[5] and body[5]. Snake can see if it hits the wall
 In the output layer only one nueron can be set to '1' at any time.
 
 When te snake grows longer, the AI is defeated but if the length of the snake is kept constant, AI has no problem playing the game
+
+<img src="snake_movie.gif" alt="Snanke Game Gif" height="42" width="42">
